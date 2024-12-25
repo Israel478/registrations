@@ -7,8 +7,8 @@ import Contact from "./components/contact";
 import News from "./components/news";
 import { createBrowserRouter, RouterProvider, } from "react-router-dom";
 import Layout from "./components/layout";
-import { Link } from "react-router-dom";
-
+import {Link} from "react-router-dom";
+import Registration from "./components/registration";
 
 const routes = createBrowserRouter([
     {
@@ -28,6 +28,10 @@ const routes = createBrowserRouter([
         {
           path:"contact",
           element: <Contact/>
+        },
+        {
+          path:"registration",
+          element:<Registration/>
         }
       ]
     },
@@ -38,6 +42,7 @@ function App() {
     <>
       <RouterProvider router={routes} />
     </>
+    
   );
 }
 
