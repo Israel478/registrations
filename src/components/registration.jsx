@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import '../App.css'
+import '../App.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUser, setError, setLoading } from '../store/slices/authSlice';
 
 export default function Registration() {
+  const dispatch = useDispatch();
+  const { loading, error, users } = useSelector((state) => state.auth);
+  
   const [formData, setFormData] = useState({
     firstname: '',
     middlename: '',
@@ -14,8 +19,8 @@ export default function Registration() {
 
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [users, setUsers] = useState([]);
   const [passwordStrength, setPasswordStrength] = useState(0);
+  const [focusedField, setFocusedField] = useState(null);
 
   // Password strength checker
   const checkPasswordStrength = (password) => {
@@ -47,23 +52,6 @@ export default function Registration() {
         ...errors,
         [name]: ''
       });
-    }
-  };
-
-  // Get password strength color
-  const getPasswordStrengthColor = () => {
-    switch (passwordStrength) {
-      case 0:
-      case 1:
-        return 'bg-red-500';
-      case 2:
-      case 3:
-        return 'bg-yellow-500';
-      case 4:
-      case 5:
-        return 'bg-green-500';
-      default:
-        return 'bg-gray-200';
     }
   };
 
@@ -110,310 +98,263 @@ export default function Registration() {
     return formErrors;
   };
 
+  // Check if form is valid
+  const isFormValid = () => {
+    return (
+      formData.firstname.trim() !== '' &&
+      formData.lastname.trim() !== '' &&
+      formData.email.trim() !== '' &&
+      formData.password.trim() !== '' &&
+      formData.confirmPassword.trim() !== '' &&
+      formData.password === formData.confirmPassword &&
+      passwordStrength >= 3 // Requiring at least medium password strength
+    );
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formErrors = validateForm();
-
-    if (Object.keys(formErrors).length === 0) {
-      setIsSubmitted(true);
-      
-      // Add new user to the list
-      const newUser = {
-        id: Date.now(),
-        firstname: formData.firstname,
-        middlename: formData.middlename,
-        lastname: formData.lastname,
-        email: formData.email,
-      };
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setUsers([...users, newUser]);
-      
-      // Reset form
-      setFormData({
-        firstname: '',
-        middlename: '',
-        lastname: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-      });
-      setPasswordStrength(0);
-      
-      // Clear success message after 3 seconds
-      setTimeout(() => {
-        setIsSubmitted(false);
-      }, 3000);
+    const validationErrors = validateForm();
+    
+    if (Object.keys(validationErrors).length === 0) {
+      dispatch(setLoading(true));
+      try {
+        // Here you would typically make an API call to register the user
+        // For now, we'll simulate a successful registration
+        const userData = {
+          ...formData,
+          id: Date.now(), // temporary ID
+        };
+        dispatch(setUser(userData));
+        setIsSubmitted(true);
+        setFormData({
+          firstname: '',
+          middlename: '',
+          lastname: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
+        });
+      } catch (err) {
+        dispatch(setError(err.message));
+      } finally {
+        dispatch(setLoading(false));
+      }
     } else {
-      setErrors(formErrors);
-      setIsSubmitted(false);
+      setErrors(validationErrors);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-cyan-900 to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative py-3 sm:max-w-xl sm:mx-auto"
+        className="max-w-md mx-auto"
       >
-        <div className="relative px-4 py-10 bg-white mx-8 md:mx-0 shadow rounded-3xl sm:p-10">
-          <div className="max-w-md mx-auto">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="flex items-center space-x-5"
-            >
-              <div className="block pl-2 font-semibold text-xl text-gray-700">
-                <h2 className="leading-relaxed">Create an Account</h2>
-              </div>
-            </motion.div>
-            
-            <AnimatePresence>
-              {isSubmitted && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded"
-                >
-                  Registration Successful!
-                </motion.div>
-              )}
-            </AnimatePresence>
+        <div className="backdrop-blur-lg bg-white/10 rounded-xl shadow-2xl p-8 space-y-6 border border-white/20">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            <h2 className="text-3xl font-bold text-center text-white mb-8">
+              Create Account
+            </h2>
+          </motion.div>
 
-            <form onSubmit={handleSubmit} className="divide-y divide-gray-200">
-              <div className="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="flex flex-col"
-                >
-                  <label className="leading-loose">First Name *</label>
-                  <input
-                    type="text"
-                    className={`px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none ${errors.firstname ? 'border-red-500' : ''}`}
-                    placeholder="Enter your first name"
-                    name="firstname"
-                    value={formData.firstname}
-                    onChange={handleChange}
-                  />
-                  <AnimatePresence>
-                    {errors.firstname && (
-                      <motion.p
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="text-red-500 text-sm mt-1"
-                      >
-                        {errors.firstname}
-                      </motion.p>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Form fields */}
+            {Object.entries({
+              firstname: 'First Name',
+              middlename: 'Middle Name',
+              lastname: 'Last Name',
+              email: 'Email',
+              password: 'Password',
+              confirmPassword: 'Confirm Password'
+            }).map(([field, label]) => (
+              <motion.div
+                key={field}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 }}
+                className="relative"
+              >
+                <motion.input
+                  type={field.includes('password') ? 'password' : 'text'}
+                  name={field}
+                  value={formData[field]}
+                  onChange={handleChange}
+                  onFocus={() => setFocusedField(field)}
+                  onBlur={() => setFocusedField(null)}
+                  className={`w-full px-4 py-3 bg-gray-800/50 text-white rounded-lg border ${
+                    errors[field] 
+                      ? 'border-red-500' 
+                      : focusedField === field 
+                        ? 'border-cyan-400' 
+                        : 'border-gray-600'
+                  } focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-300`}
+                  placeholder={label}
+                />
+                <AnimatePresence>
+                  {errors[field] && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute text-sm text-red-400 mt-1"
+                    >
+                      {errors[field]}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            ))}
 
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="flex flex-col"
-                >
-                  <label className="leading-loose">Middle Name</label>
-                  <input
-                    type="text"
-                    className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none"
-                    placeholder="Enter your middle name (optional)"
-                    name="middlename"
-                    value={formData.middlename}
-                    onChange={handleChange}
-                  />
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.5 }}
-                  className="flex flex-col"
-                >
-                  <label className="leading-loose">Last Name *</label>
-                  <input
-                    type="text"
-                    className={`px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none ${errors.lastname ? 'border-red-500' : ''}`}
-                    placeholder="Enter your last name"
-                    name="lastname"
-                    value={formData.lastname}
-                    onChange={handleChange}
-                  />
-                  <AnimatePresence>
-                    {errors.lastname && (
-                      <motion.p
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="text-red-500 text-sm mt-1"
-                      >
-                        {errors.lastname}
-                      </motion.p>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.6 }}
-                  className="flex flex-col"
-                >
-                  <label className="leading-loose">Email *</label>
-                  <input
-                    type="email"
-                    className={`px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none ${errors.email ? 'border-red-500' : ''}`}
-                    placeholder="Enter your email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                  <AnimatePresence>
-                    {errors.email && (
-                      <motion.p
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="text-red-500 text-sm mt-1"
-                      >
-                        {errors.email}
-                      </motion.p>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.7 }}
-                  className="flex flex-col"
-                >
-                  <label className="leading-loose">Password *</label>
-                  <input
-                    type="password"
-                    className={`px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none ${errors.password ? 'border-red-500' : ''}`}
-                    placeholder="Enter your password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                  />
-                  {/* Password strength indicator */}
-                  <div className="mt-2 h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+            {/* Password Strength Indicator */}
+            {formData.password && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="space-y-2"
+              >
+                <div className="flex space-x-1">
+                  {[...Array(5)].map((_, index) => (
                     <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${(passwordStrength / 5) * 100}%` }}
-                      className={`h-full ${getPasswordStrengthColor()} transition-all duration-300`}
+                      key={index}
+                      className={`h-1 w-full rounded-full ${
+                        index < passwordStrength
+                          ? [
+                              'bg-red-500',
+                              'bg-orange-500',
+                              'bg-yellow-500',
+                              'bg-green-500',
+                              'bg-cyan-500'
+                            ][passwordStrength - 1]
+                          : 'bg-gray-600'
+                      }`}
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ delay: index * 0.1 }}
                     />
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Password strength: {passwordStrength === 0 ? 'Very Weak' : 
-                                     passwordStrength === 1 ? 'Weak' :
-                                     passwordStrength === 2 ? 'Fair' :
-                                     passwordStrength === 3 ? 'Good' :
-                                     passwordStrength === 4 ? 'Strong' : 'Very Strong'}
-                  </p>
-                  <AnimatePresence>
-                    {errors.password && (
-                      <motion.p
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="text-red-500 text-sm mt-1"
-                      >
-                        {errors.password}
-                      </motion.p>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
+                  ))}
+                </div>
+                <p className="text-sm text-gray-300">
+                  Password Strength: {
+                    ['Very Weak', 'Weak', 'Medium', 'Strong', 'Very Strong'][
+                      passwordStrength - 1
+                    ] || 'None'
+                  }
+                </p>
+              </motion.div>
+            )}
 
+            {/* Submit Button */}
+            <motion.button
+              type="submit"
+              disabled={!isFormValid() || loading}
+              className={`w-full relative overflow-hidden group ${
+                isFormValid() && !loading
+                  ? 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600'
+                  : 'bg-gray-600 cursor-not-allowed'
+              } text-white px-6 py-3 rounded-lg font-medium transition-all duration-300`}
+              whileHover={{ scale: isFormValid() ? 1.02 : 1 }}
+              whileTap={{ scale: isFormValid() ? 0.98 : 1 }}
+            >
+              {loading ? (
                 <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.8 }}
-                  className="flex flex-col"
-                >
-                  <label className="leading-loose">Confirm Password *</label>
-                  <input
-                    type="password"
-                    className={`px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none ${errors.confirmPassword ? 'border-red-500' : ''}`}
-                    placeholder="Confirm your password"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="w-6 h-6 border-3 border-white border-t-transparent rounded-full mx-auto"
+                />
+              ) : (
+                <>
+                  <span className="relative z-10">Register</span>
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                    initial={false}
+                    animate={{ opacity: isFormValid() ? 0 : 1 }}
                   />
-                  <AnimatePresence>
-                    {errors.confirmPassword && (
-                      <motion.p
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="text-red-500 text-sm mt-1"
-                      >
-                        {errors.confirmPassword}
-                      </motion.p>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              </div>
-              <div className="pt-4 flex items-center space-x-4">
-                <motion.button
-                  type="submit"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="bg-cyan-800 flex justify-center items-center w-full text-white px-4 py-3 rounded-md focus:outline-none hover:bg-cyan-700 transition-colors"
-                >
-                  Create Account
-                </motion.button>
-              </div>
-            </form>
-          </div>
+                </>
+              )}
+            </motion.button>
+          </form>
         </div>
       </motion.div>
 
-      {/* User List Section */}
+      {/* Messages Container */}
+      <div className="max-w-md mx-auto mt-8 space-y-4">
+        <AnimatePresence>
+          {isSubmitted && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="backdrop-blur-lg bg-green-500/20 border border-green-500/50 rounded-lg p-4"
+            >
+              <p className="text-green-400">
+                <span className="font-bold">Success!</span> Registration completed successfully.
+              </p>
+            </motion.div>
+          )}
+
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="backdrop-blur-lg bg-red-500/20 border border-red-500/50 rounded-lg p-4"
+            >
+              <p className="text-red-400">
+                <span className="font-bold">Error!</span> {error}
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Users List */}
       <AnimatePresence>
         {users.length > 0 && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="mt-8 sm:max-w-xl sm:mx-auto"
+            exit={{ opacity: 0, y: 40 }}
+            className="max-w-4xl mx-auto mt-16"
           >
-            <div className="bg-white shadow rounded-lg overflow-hidden">
-              <div className="px-4 py-5 sm:px-6">
-                <h3 className="text-lg leading-6 font-medium text-gray-900">
+            <div className="backdrop-blur-lg bg-white/10 rounded-xl shadow-2xl border border-white/20 overflow-hidden">
+              <div className="px-6 py-5">
+                <h3 className="text-2xl font-bold text-white">
                   Registered Users
                 </h3>
-                <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                  List of all registered users
+                <p className="text-gray-300 mt-1">
+                  Total users: {users.length}
                 </p>
               </div>
-              <div className="border-t border-gray-200">
-                <ul className="divide-y divide-gray-200">
+              <div className="border-t border-white/10">
+                <ul className="divide-y divide-white/10">
                   {users.map((user, index) => (
                     <motion.li
                       key={user.id}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.1 }}
-                      className="px-4 py-4 sm:px-6 hover:bg-gray-50 transition-colors"
+                      className="px-6 py-4 hover:bg-white/5 transition-colors group"
                     >
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className="flex-shrink-0">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold">
+                            {user.firstname[0]}
+                          </div>
+                        </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-cyan-800 truncate">
+                          <motion.p 
+                            className="text-lg font-medium text-white truncate group-hover:text-cyan-400 transition-colors"
+                            whileHover={{ scale: 1.02 }}
+                          >
                             {user.firstname} {user.middlename ? `${user.middlename} ` : ''}{user.lastname}
-                          </p>
-                          <p className="text-sm text-gray-500">
+                          </motion.p>
+                          <p className="text-gray-400 truncate">
                             {user.email}
                           </p>
                         </div>
