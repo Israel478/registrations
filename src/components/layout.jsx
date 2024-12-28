@@ -23,6 +23,7 @@ export default function Layout() {
     { to: "/contact", label: "Contact", icon: "📞" },
     { to: "/registration", label: "Registration", icon: "📝" },
     { to: "/counter", label: "Counter", icon: "🔢" },
+    { to: "/todo", label: "Todo", icon: "✅" }
   ];
 
   return (
