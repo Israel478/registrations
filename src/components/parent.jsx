@@ -1,47 +1,84 @@
+import { motion } from "framer-motion";
 import ChildComponent from "./child";
-import { useEffect, useState , useRef} from "react";
-import{Link} from"react-router-dom";
+import { useEffect, useState, useRef } from "react";
+import { Link } from "react-router-dom";
 
 export default function ParentComponent() {
-    
-    const [learnMoreButtonClicked, setLearnMoreButtonClicked] = useState(false);  
-    const vistors = useRef(0);
+  const [learnMoreButtonClicked, setLearnMoreButtonClicked] = useState(false);
+  const vistors = useRef(0);
 
-    useEffect(() => {
-        // setVistors(vistors + 1)
-        return ()=>{
-            console.log("clean up");
-        }
-    }, []);
-     
-    return (
-      <div className="flex flex-col items-center justify-center ">
+  useEffect(() => {
+    // setVistors(vistors + 1)
+    return () => {
+      console.log("clean up");
+    };
+  }, []);
 
-        <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-gray-100">
-          We invest in the world’s potential
-        </h1>
-        <p className="mb-6 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 xl:px-48 dark:text-gray-400">
-          Here at Flowbite we focus on markets where technology, innovation, and
-          capital can unlock long-term value and drive economic development.
-        </p>
-        <a
-          href="#"
-          onClick={() => {
-            setLearnMoreButtonClicked(!learnMoreButtonClicked); //toggle
-          }}
-          className="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900"
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center mb-12"
+      >
+        <h1 className="text-5xl font-bold text-white mb-4">Elite Football Academy</h1>
+        <p className="text-xl text-gray-300">Transform Your Game with Professional Coaching</p>
+      </motion.div>
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Feature Cards */}
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          className="bg-green-950 bg-opacity-50 p-6 rounded-lg shadow-xl"
         >
-          {learnMoreButtonClicked ? "Back" : " Learn more"}
-        </a>
-        {/* props */}
+          <div className="text-4xl mb-4">⚽</div>
+          <h3 className="text-xl font-bold text-white mb-2">Professional Training</h3>
+          <p className="text-gray-300">Expert coaching from experienced professionals with proven track records</p>
+        </motion.div>
 
-        <ChildComponent show={learnMoreButtonClicked ? "learnMore" : "quote"} />
-        <p
-          ref={vistors}
-          className="text-2xl fixed bottom-0 left-0 text-white font-bold"
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          className="bg-green-950 bg-opacity-50 p-6 rounded-lg shadow-xl"
         >
-          Vistors
-        </p>
+          <div className="text-4xl mb-4">🏃</div>
+          <h3 className="text-xl font-bold text-white mb-2">Personalized Programs</h3>
+          <p className="text-gray-300">Customized training programs tailored to your specific needs and goals</p>
+        </motion.div>
+
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          className="bg-green-950 bg-opacity-50 p-6 rounded-lg shadow-xl"
+        >
+          <div className="text-4xl mb-4">🏆</div>
+          <h3 className="text-xl font-bold text-white mb-2">Competition Ready</h3>
+          <p className="text-gray-300">Prepare for matches with tactical training and competitive scenarios</p>
+        </motion.div>
       </div>
-    );
-}   
+
+      {/* Animated Soccer Ball */}
+      <motion.div
+        className="fixed bottom-10 right-10 text-6xl"
+        animate={{
+          rotate: [0, 360],
+          y: [0, -20, 0]
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          repeatType: "reverse"
+        }}
+      >
+        ⚽
+      </motion.div>
+
+      {/* props */}
+      <ChildComponent show={learnMoreButtonClicked ? "learnMore" : "quote"} />
+      <p
+        ref={vistors}
+        className="text-2xl fixed bottom-0 left-0 text-white font-bold"
+      >
+        Vistors
+      </p>
+    </div>
+  );
+}

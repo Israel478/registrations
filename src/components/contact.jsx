@@ -1,70 +1,112 @@
+import { motion } from "framer-motion";
 
-import  { useState } from "react"; 
-import FeedBacks from "./feedbacks";
+export default function Coaches() {
+  const coach = {
+    name: "Kassa Degefa",
+    role: "Head Coach & Founder",
+    specialization: "Professional Football Development",
+    experience: "20+ years",
+    certifications: [
+      "UEFA Pro License",
+      "FIFA Certified Coach",
+      "Youth Development Specialist"
+    ],
+    achievements: [
+      "Former Professional Player",
+      "National Team Experience",
+      "Developed 50+ Professional Players"
+    ],
+    philosophy: "Building champions through discipline, dedication, and technical excellence"
+  };
 
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center mb-12"
+      >
+        <h1 className="text-4xl font-bold text-white mb-4">Meet Our Head Coach</h1>
+        <p className="text-xl text-gray-300">Excellence in Football Training</p>
+      </motion.div>
 
-export default function Contact() {
-
-    const [email, setEmail] = useState("");
-    const [feedback, setFeedback] = useState("");
-    
-    const [feedbacks, setFeedbacks] = useState([{
-        email:"test@email.com",
-        feedback:"new feedback"
-    }]); 
-    
-    function handleSubmit (e) {   
-        e.preventDefault();
-        console.log(email, feedback);
-        setFeedbacks([...feedbacks, {email, feedback}]);
-    }   
-    
-    return (
-      <>
-        <form onSubmit={handleSubmit} className="space-y-6 w-2/3 mx-auto p-4 border border-1 m-6 border-yellow-500 rounded-lg">
-          <div className="grid gap-6 mb-6 md:grid-cols-2"></div>
-          <div className="mb-6">
-            <label
-              htmlFor="email"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Email address
-            </label>
-            <input
-              type="email"
-              id="email"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="john.doe@company.com"
-              onChange = {(e) => { setEmail(e.target.value)}}
-              required
-            />
-          </div>
-          <div className="grid gap-6 mb-6 md:grid-cols-2"></div>
-          <div className="mb-6">
-            <label
-              htmlFor="feedback"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-                Feedback
-            </label>
-            <textarea
-              id="feedback"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              onChange={(e) => {
-               setFeedback(e.target.value);
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-4xl mx-auto bg-green-950 bg-opacity-50 p-8 rounded-lg shadow-xl"
+      >
+        <div className="grid md:grid-cols-2 gap-8 items-center">
+          <div className="text-center">
+            <motion.div
+              className="text-9xl mb-4 mx-auto"
+              animate={{
+                scale: [1, 1.1, 1],
+                rotate: [0, 5, -5, 0]
               }}
-              placeholder="Your feedback here"
-              required
-            />
+              transition={{
+                duration: 5,
+                repeat: Infinity,
+                repeatType: "reverse"
+              }}
+            >
+              👨‍🏫
+            </motion.div>
+            <h2 className="text-3xl font-bold text-white">{coach.name}</h2>
+            <p className="text-xl text-cyan-400 font-semibold">{coach.role}</p>
           </div>
-          <button
-            type="submit"
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          >
-            Submit
-          </button>
-        </form>
-        <FeedBacks feedBacks={feedbacks} />
-      </>
-    );
+
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-xl font-bold text-white mb-2">Expertise</h3>
+              <p className="text-gray-300">{coach.specialization}</p>
+            </div>
+
+            <div>
+              <h3 className="text-xl font-bold text-white mb-2">Experience</h3>
+              <p className="text-gray-300">{coach.experience}</p>
+            </div>
+
+            <div>
+              <h3 className="text-xl font-bold text-white mb-2">Certifications</h3>
+              <ul className="list-disc list-inside text-gray-300">
+                {coach.certifications.map((cert, index) => (
+                  <li key={index}>{cert}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-xl font-bold text-white mb-2">Achievements</h3>
+              <ul className="list-disc list-inside text-gray-300">
+                {coach.achievements.map((achievement, index) => (
+                  <li key={index}>{achievement}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8 p-6 bg-green-900 bg-opacity-50 rounded-lg">
+          <h3 className="text-xl font-bold text-white mb-2">Coaching Philosophy</h3>
+          <p className="text-gray-300 italic">"{coach.philosophy}"</p>
+        </div>
+      </motion.div>
+
+      {/* Floating Football Animation */}
+      <motion.div
+        className="fixed bottom-20 left-10 text-4xl"
+        animate={{
+          y: [0, -20, 0],
+          rotate: [0, 360]
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          repeatType: "reverse"
+        }}
+      >
+        ⚽
+      </motion.div>
+    </div>
+  );
 }

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useSelector, useDispatch } from 'react-redux';
-import { increment, decrement, reset } from '../store/features/counter/counterSlice';
+import { increment, decrement, reset } from '../features/counterSlice';
 
 export default function Counter() {
   const count = useSelector((state) => state.counter.value);

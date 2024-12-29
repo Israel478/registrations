@@ -1,58 +1,31 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
-import ParentComponent from "./components/parent";
-import Contact from "./components/contact";
-import News from "./components/news";
-import { createBrowserRouter, RouterProvider, } from "react-router-dom";
-import Layout from "./components/layout";
-import {Link} from "react-router-dom";
-import Registration from "./components/registration";
-import Counter from "./components/counter";
-import Todo from "./components/todo";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Layout from './components/layout';
+import Parent from './components/parent';
+import Training from './components/news';
+import Coaches from './components/contact';
+import Registration from './components/registration';
+import Statistics from './components/counter';
+import Schedule from './components/todo';
+import CoachRegistration from './components/coachRegistration';
+import Members from './components/members';
+import './index.css';
 
-const routes = createBrowserRouter([
-  {
-    path: "/",
-    element: <Layout />,
-    children: [
-      {
-        path: "home",
-        index: true,
-        element: <ParentComponent />
-      },
-
-      {
-        path: "news",
-        element: <News />
-      },
-      {
-        path: "contact",
-        element: <Contact />
-      },
-      {
-        path: "registration",
-        element: <Registration />
-      },
-      {
-        path: "counter",
-        element: <Counter />
-      },
-      {
-        path: "todo",
-        element: <Todo />
-      }
-    ]
-  },
-])
 function App() {
-
   return (
-    <>
-      <RouterProvider router={routes} />
-    </>
-
+    <Router>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Parent />} />
+          <Route path="training" element={<Training />} />
+          <Route path="coaches" element={<Coaches />} />
+          <Route path="join-team" element={<Registration />} />
+          <Route path="statistics" element={<Statistics />} />
+          <Route path="schedule" element={<Schedule />} />
+          <Route path="coach-registration" element={<CoachRegistration />} />
+          <Route path="members" element={<Members />} />
+        </Route>
+      </Routes>
+    </Router>
   );
 }
 
