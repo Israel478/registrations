@@ -12,7 +12,7 @@ export default function Training() {
     {
       title: "Tactical Understanding",
       description: "Learn positioning, game reading, and decision making",
-      icon: "🧠",
+      icon: "📒",
       duration: "2 hours",
       level: "Intermediate"
     },
@@ -26,7 +26,7 @@ export default function Training() {
     {
       title: "Team Strategy",
       description: "Practice formations, set pieces, and team coordination",
-      icon: "👥",
+      icon: "🤝",
       duration: "2 hours",
       level: "Advanced"
     }

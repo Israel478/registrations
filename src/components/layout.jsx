@@ -11,8 +11,7 @@ export default function Layout() {
     { to: "/coaches", label: "Coaches", icon: "👨‍🏫" },
     { to: "/join-team", label: "Join Team", icon: "📝" },
     { to: "/coach-registration", label: "Coach Registration", icon: "📋" },
-    { to: "/statistics", label: "Statistics", icon: "📊" },
-    { to: "/schedule", label: "Schedule", icon: "📅" },
+    
     { to: "/members", label: "Members", icon: "👥" }
   ];
 

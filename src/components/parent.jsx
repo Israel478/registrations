@@ -21,7 +21,7 @@ export default function ParentComponent() {
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-12"
       >
-        <h1 className="text-5xl font-bold text-white mb-4">Elite Football Academy</h1>
+        <h1 className="text-5xl font-bold text-white mb-4">KDFCA Football Academy</h1>
         <p className="text-xl text-gray-300">Transform Your Game with Professional Coaching</p>
       </motion.div>
 
